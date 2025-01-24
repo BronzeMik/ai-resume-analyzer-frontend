@@ -42,8 +42,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col gap-3 items-center bg-white w-full">
-      <div className="flex flex-col md:flex-row items-center md:items-stretch justify-center w-full p-10 h-screen bg-white my-10">
-        <div className="flex flex-col justify-center items-center md:items-start w-full md:w-3/5 text-center md:text-left">
+      <div className="flex flex-col md:flex-row items-center md:items-stretch justify-center w-full p-10 md:h-screen bg-white my-10">
+        <div className="flex flex-col justify-center items-center md:items-start mb-5 md:mb-0 w-full md:w-3/5 text-center md:text-left">
           <Image
             src="/resume.gif"
             alt="Resume Analyzer"
@@ -95,7 +95,7 @@ export default function Home() {
           />
           <label
             htmlFor="fileUpload"
-            className="cursor-pointer flex items-center justify-center border border-gray-300 rounded-lg shadow-md p-3 bg-white text-gray-700 focus:ring-2 w-[80%] mb-6 focus:ring-blue-500 focus:outline-none hover:bg-gray-100 transition-all duration-300"
+            className="cursor-pointer flex items-center justify-center border border-gray-300 rounded-lg shadow-md p-3 bg-white text-gray-700 focus:ring-2 w-[95%] md:w-[80%] mb-6 focus:ring-blue-500 focus:outline-none hover:bg-gray-100 transition-all duration-300"
           >
             {file ? (
               <span className="truncate">{file.name}</span>
@@ -112,11 +112,11 @@ export default function Home() {
             placeholder="Paste job description here..."
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
-            className="border border-gray-300 rounded-lg shadow-md p-3 w-[80%] h-40 mb-4 bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="border border-gray-300 rounded-lg shadow-md p-3 w-[95%] md:w-[80%] h-40 mb-4 bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
           <button
             onClick={handleUpload}
-            className="bg-purple-600 text-white w-[80%] px-6 py-2 rounded-lg transform hover:translate-y-1 hover:shadow-2xl transition-all duration-300"
+            className="bg-purple-600 text-white w-[95%] md:w-[80%] px-6 py-2 rounded-lg transform hover:translate-y-1 hover:shadow-2xl transition-all duration-300"
             disabled={loading}
           >
             {loading ? "Analyzing..." : "Analyze Resume"}
@@ -136,7 +136,7 @@ export default function Home() {
       {feedback && (
         <div className="mt-6 p-4 border rounded bg-white w-full">
           <h2
-            className="text-6xl font-extrabold
+            className="text-4xl md:text-6xl font-extrabold
                         
                         bg-gradient-to-r from-blue-500 to-purple-600 
                         bg-clip-text text-transparent
@@ -148,8 +148,8 @@ export default function Home() {
             Feedback:
           </h2>
           <div>
-            <p className={`${feedback.score > 80 ? "text-green-500" : feedback.score > 50 ? "text-orange-500" : "text-red-700"} font-bold text-4xl`}>
-              <strong className="text-black text-4xl uppercase">Score:</strong> {feedback.score}
+            <p className={`${feedback.score > 80 ? "text-green-500" : feedback.score > 50 ? "text-orange-500" : "text-red-700"} font-bold text-2xl md:text-4xl`}>
+              <strong className="text-black text-2xl md:text-4xl uppercase">Score:</strong> {feedback.score}
             </p>
             <p className="mt-12">
               <strong className="mt-2 font-semibold text-gray-800">Suggestions:</strong>{" "}
@@ -159,7 +159,7 @@ export default function Home() {
             {feedback.recommendations.map((recommenation, index) => (
               <ul key={index}>
                 <li className="list-none border-2 border-slate-200 shadow-md w-full px-4 py-3 mt-3 flex justify-start gap-3">
-                <RiArrowRightCircleLine className="text-purple-600"/>
+                <RiArrowRightCircleLine className="text-purple-600 min-w-5"/>
                   {recommenation}
                 </li>
               </ul>
@@ -174,7 +174,7 @@ export default function Home() {
               {feedback.missingSkills.map((skill, index) => (
                 <ul key={index}>
                   <li className="list-none border-2 border-slate-200 shadow-md w-full px-4 py-3 mt-3 flex justify-start gap-3">
-                  <RiArrowRightCircleLine className="text-purple-600"/>
+                  <RiArrowRightCircleLine className="text-purple-600 min-w-5"/>
                     {skill}
                   </li>
                 </ul>
