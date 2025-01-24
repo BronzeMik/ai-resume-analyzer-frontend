@@ -1,101 +1,189 @@
+"use client";
+
+import { useState } from "react";
+import axios from "axios";
 import Image from "next/image";
+import { RiArrowRightCircleLine } from "react-icons/ri";
+import { TiArrowDownOutline } from "react-icons/ti";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [file, setFile] = useState(null);
+  const [jobDescription, setJobDescription] = useState("");
+  const [feedback, setFeedback] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleUpload = async () => {
+    if (!file || !jobDescription) {
+      alert("Please upload a resume and enter a job description.");
+      return;
+    }
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("resume", file);
+    formData.append("jobDescription", jobDescription);
+
+    try {
+      const response = await axios
+        .post("https://ai-resume-analyzer-kohl.vercel.app/api/analyze", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((res) => {
+          console.log(res.data.feedback);
+          setFeedback(res.data.feedback);
+          console.log(feedback);
+        });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setFeedback({ error: "Error analyzing the resume. Please try again." });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col gap-3 items-center bg-white w-full">
+      <div className="flex flex-col md:flex-row items-center md:items-stretch justify-center w-full p-10 h-screen bg-white my-10">
+        <div className="flex flex-col justify-center items-center md:items-start w-full md:w-3/5 text-center md:text-left">
+          <Image
+            src="/resume.gif"
+            alt="Resume Analyzer"
+            width={300}
+            height={300}
+            className="mx-auto"
+          />
+          <h1
+            className="text-5xl font-extrabold 
+              bg-gradient-to-r from-blue-500 to-purple-600 
+              bg-clip-text text-transparent
+              tracking-widest 
+              uppercase 
+              text-center md:text-left
+              px-4 rounded-lg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            AI Resume Analyzer
+          </h1>
+          <p className="text-gray-700 text-justify mt-4 max-w-2xl">
+            Welcome to AI Resume Analyzer – your personal career enhancement
+            tool! Our advanced AI technology helps you fine-tune your resume to
+            perfectly align with job descriptions, ensuring you stand out in
+            today&apos;s competitive job market.
+          </p>
+          <br />
+          <p className="text-gray-700 text-justify mt-4 max-w-2xl">
+            Whether you&apos;re applying for your dream job or looking to
+            optimize your professional profile, our resume analyzer provides
+            personalized feedback on your skills, experience, and formatting.
+            Let AI guide you toward crafting a winning resume that catches the
+            recruiter&apos;s attention and maximizes your chances of landing
+            your next opportunity!
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <div
+          className="flex flex-col items-center justify-center w-full md:w-2/5 h-full border-2 mx-7 bg-gray-100 
+          shadow-[5px_5px_15px_rgba(0,0,0,0.2),-5px_-5px_15px_rgba(255,255,255,0.5)] 
+          rounded-lg p-6"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+          <h2 className="text-3xl mb-10 text-center font-extrabold text-gray-800">
+            Upload your resume and job description
+          </h2>
+          <input
+            type="file"
+            id="fileUpload"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="hidden"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <label
+            htmlFor="fileUpload"
+            className="cursor-pointer flex items-center justify-center border border-gray-300 rounded-lg shadow-md p-3 bg-white text-gray-700 focus:ring-2 w-[80%] mb-6 focus:ring-blue-500 focus:outline-none hover:bg-gray-100 transition-all duration-300"
+          >
+            {file ? (
+              <span className="truncate">{file.name}</span>
+            ) : (
+              <span className="text-gray-400">
+                Upload your resume (PDF, DOCX)
+              </span>
+            )}
+            <span className="ml-4 bg-blue-500 text-white py-1 px-4 rounded-md shadow hover:bg-blue-600">
+              Browse
+            </span>
+          </label>
+          <textarea
+            placeholder="Paste job description here..."
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+            className="border border-gray-300 rounded-lg shadow-md p-3 w-[80%] h-40 mb-4 bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <button
+            onClick={handleUpload}
+            className="bg-purple-600 text-white w-[80%] px-6 py-2 rounded-lg transform hover:translate-y-1 hover:shadow-2xl transition-all duration-300"
+            disabled={loading}
+          >
+            {loading ? "Analyzing..." : "Analyze Resume"}
+          </button>
+          {feedback && (
+            <div className="flex flex-col items-center justify-center mt-6">
+            <p className="text-2xl text-gray-700 text-center mt-4">
+              Resume Score will be displayed below
+              </p>
+            <TiArrowDownOutline className="text-4xl text-purple-500 mt-4 animate-bounce" />
+          </div>
+          )}
+          
+        </div>
+      </div>
+
+      {feedback && (
+        <div className="mt-6 p-4 border rounded bg-white w-full">
+          <h2
+            className="text-6xl font-extrabold
+                        
+                        bg-gradient-to-r from-blue-500 to-purple-600 
+                        bg-clip-text text-transparent
+                        tracking-widest 
+                        uppercase 
+                        text-center 
+                        p-4"
+          >
+            Feedback:
+          </h2>
+          <div>
+            <p className={`${feedback.score > 80 ? "text-green-500" : feedback.score > 50 ? "text-orange-500" : "text-red-700"} font-bold text-4xl`}>
+              <strong className="text-black text-4xl uppercase">Score:</strong> {feedback.score}
+            </p>
+            <p className="mt-12">
+              <strong className="mt-2 font-semibold text-gray-800">Suggestions:</strong>{" "}
+              {feedback.recommendations.join(", ")}
+            </p>
+            <br />
+            {feedback.recommendations.map((recommenation, index) => (
+              <ul key={index}>
+                <li className="list-none border-2 border-slate-200 shadow-md w-full px-4 py-3 mt-3 flex justify-start gap-3">
+                <RiArrowRightCircleLine className="text-purple-600"/>
+                  {recommenation}
+                </li>
+              </ul>
+
+            ))}
+          </div>
+          <div className="mt-12">
+            <p>
+              <strong className="mt-2 font-semibold text-gray-800">Skills Needed:</strong> {feedback.summary}
+            </p>
+            <br />
+              {feedback.missingSkills.map((skill, index) => (
+                <ul key={index}>
+                  <li className="list-none border-2 border-slate-200 shadow-md w-full px-4 py-3 mt-3 flex justify-start gap-3">
+                  <RiArrowRightCircleLine className="text-purple-600"/>
+                    {skill}
+                  </li>
+                </ul>
+            ))}
+
+          </div>
+          
+        </div>
+      )}
     </div>
   );
 }
