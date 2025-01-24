@@ -5,6 +5,8 @@ import axios from "axios";
 import Image from "next/image";
 import { RiArrowRightCircleLine } from "react-icons/ri";
 import { TiArrowDownOutline } from "react-icons/ti";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   const [file, setFile] = useState(null);
@@ -13,8 +15,19 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async () => {
-    if (!file || !jobDescription) {
-      alert("Please upload a resume and enter a job description.");
+    if (!file) {
+      toast.error("Please upload a resume file.", { position: "top-center" });
+      return;
+    }
+  
+    // Check if the uploaded file is a PDF
+    if (file.type !== "application/pdf") {
+      toast.error("Only PDF files are allowed.", { position: "top-center" });
+      return;
+    }
+  
+    if (!jobDescription) {
+      toast.error("Please enter a job description.", { position: "top-center" });
       return;
     }
 
@@ -31,17 +44,26 @@ export default function Home() {
         .then((res) => {
           console.log(res.data.feedback);
           setFeedback(res.data.feedback);
-          console.log(feedback);
+          toast.success("Resume analyzed successfully!", {
+            position: "top-center",
+            autoClose: 3000,
+          });
         });
     } catch (error) {
       console.error("Error uploading file:", error);
       setFeedback({ error: "Error analyzing the resume. Please try again." });
+
+    toast.error("Error analyzing the resume. Please try again.", {
+      position: "top-center",
+      autoClose: 3000,
+    });
     }
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen flex flex-col gap-3 items-center bg-white w-full">
+      <ToastContainer />
       <div className="flex flex-col md:flex-row items-center md:items-stretch justify-center w-full p-10 md:h-screen bg-white my-10">
         <div className="flex flex-col justify-center items-center md:items-start mb-5 md:mb-0 w-full md:w-3/5 text-center md:text-left">
           <Image
@@ -121,19 +143,19 @@ export default function Home() {
           >
             {loading ? "Analyzing..." : "Analyze Resume"}
           </button>
-          {feedback && (
+          {feedback?.score ? (
             <div className="flex flex-col items-center justify-center mt-6">
             <p className="text-2xl text-gray-700 text-center mt-4">
               Resume Score will be displayed below
               </p>
             <TiArrowDownOutline className="text-4xl text-purple-500 mt-4 animate-bounce" />
           </div>
-          )}
+          ) : <></>}
           
         </div>
       </div>
 
-      {feedback && (
+      {feedback?.score ? (
         <div className="mt-6 p-4 border rounded bg-white w-full">
           <h2
             className="text-4xl md:text-6xl font-extrabold
@@ -183,7 +205,7 @@ export default function Home() {
           </div>
           
         </div>
-      )}
+      ) : <></>}
     </div>
   );
 }
